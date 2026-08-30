@@ -1,0 +1,23 @@
+stages:
+  feature_engg :
+    cmd: python src/features/build_features.py  data/raw/orders.csv
+    deps :
+    - data/raw/orders.csv
+    - src/features/build_features.py
+    outs :
+    - data/processed/data_feature_engg.csv
+
+  make_dataset:
+    cmd: python src/data/make_dataset.py data/processed/data_feature_engg.csv
+    deps:
+      - data/processed/data_feature_engg.csv
+      - src/data/make_dataset.py
+    params:
+      - make_dataset.test_split
+      - make_dataset.seed
+    outs:
+      - data/processed/train.csv
+      - data/processed/test.csv
+
+metrics:
+  - dvclive/metrics.json

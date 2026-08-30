@@ -1,30 +1,97 @@
-# -*- coding: utf-8 -*-
-import click
-import logging
-from pathlib import Path
-from dotenv import find_dotenv, load_dotenv
+import pathlib
+import yaml
+import sys
+import pandas as pd
+from sklearn.model_selection import StratifiedShuffleSplit
 
 
-@click.command()
-@click.argument('input_filepath', type=click.Path(exists=True))
-@click.argument('output_filepath', type=click.Path())
-def main(input_filepath, output_filepath):
-    """ Runs data processing scripts to turn raw data from (../raw) into
-        cleaned data ready to be analyzed (saved in ../processed).
-    """
-    logger = logging.getLogger(__name__)
-    logger.info('making final data set from raw data')
+def load_data(data_path):
+    df = pd.read_csv(data_path)
+    return df
 
 
-if __name__ == '__main__':
-    log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    logging.basicConfig(level=logging.INFO, format=log_fmt)
+def split_data(df, test_split, seed):
 
-    # not used in this stub but often useful for finding various files
-    project_dir = Path(__file__).resolve().parents[2]
+    splitter = StratifiedShuffleSplit(
+        n_splits=1,
+        test_size=test_split,
+        random_state=seed
+    )
 
-    # find .env automagically by walking up directories until it's found, then
-    # load up the .env entries as environment variables
-    load_dotenv(find_dotenv())
+    for train_idx, test_idx in splitter.split(
+        df,
+        df["returned"]
+    ):
+        train = df.iloc[train_idx]
+        test = df.iloc[test_idx]
 
+    return train, test
+
+
+def save_data(train, test, output_path):
+
+    output_path = pathlib.Path(output_path)
+
+    output_path.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    train.to_csv(
+        output_path / "train.csv",
+        index=False
+    )
+
+    test.to_csv(
+        output_path / "test.csv",
+        index=False
+    )
+
+
+def main():
+
+    curr_dir = pathlib.Path(__file__)
+
+    home_dir = (
+        curr_dir
+        .parent
+        .parent
+        .parent
+    )
+
+    params_file = (
+        home_dir / "params.yaml"
+    )
+
+    with open(params_file) as f:
+        params = yaml.safe_load(f)["make_dataset"]
+
+    input_file = sys.argv[1]
+
+    data_path = (
+        home_dir / input_file
+    )
+
+    output_path = (
+        home_dir / "data" / "processed"
+    )
+
+    data = load_data(
+        data_path
+    )
+
+    train_data, test_data = split_data(
+        data,
+        params["test_split"],
+        params["seed"]
+    )
+
+    save_data(
+        train_data,
+        test_data,
+        output_path
+    )
+
+
+if __name__ == "__main__":
     main()
