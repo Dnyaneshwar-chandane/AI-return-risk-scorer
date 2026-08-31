@@ -30,5 +30,15 @@ stages:
       - data/processed/selected_train.csv
       - data/processed/selected_test.csv
 
+  preprocessing:
+    cmd: python src/preprocessing/preprocessing.py data/processed
+    deps:
+      - data/processed/selected_train.csv
+      - data/processed/selected_test.csv
+      - src/preprocessing/preprocessing.py
+    outs:
+      - data/processed/X_train_trf.csv
+      - data/processed/X_test_trf.csv
+
 metrics:
   - dvclive/metrics.json

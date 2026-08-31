@@ -20,7 +20,7 @@ def preprocessing(X_train,X_test):
               Pipeline(
                   [
                       ('impute',SimpleImputer(strategy='most_frequent')),
-                      ('enode',OneHotEncoder(drop='first',handle_unknown='ignore'))
+                      ('enode',OneHotEncoder(drop='first',handle_unknown='ignore',sparse_output=False))
                   ]
               ),
               categorical_cols
@@ -81,7 +81,7 @@ def save_data(X_train, X_test, output_path):
 
 
 def main():
-    
+
     curr_dir = pathlib.Path(__file__)
 
     home_dir = (
@@ -90,15 +90,6 @@ def main():
         .parent
         .parent
     )
-
-    params_file = (
-        home_dir / "params.yaml"
-    )
-
-    with open(params_file) as f:
-        params = yaml.safe_load(f)[
-            "preprocessing"
-        ]
 
     input_file = sys.argv[1]
 
@@ -110,19 +101,37 @@ def main():
         home_dir / "data" / "processed"
     )
 
-    TARGET = 'returned'
-    train_features = pd.read_csv(data_path / '/train.csv')
-    test_features = pd.read_csv(data_path / '/test.csv')
-    X_train = train_features.drop(TARGET, axis=1)
-    X_test = test_features.drop(TARGET,axis=1)
+    TARGET = "returned"
+
+    train_features = pd.read_csv(
+        data_path / "selected_train.csv"
+    )
+
+    test_features = pd.read_csv(
+        data_path / "selected_test.csv"
+    )
+
+    X_train = train_features.drop(
+        TARGET,
+        axis=1
+    )
+
+    X_test = test_features.drop(
+        TARGET,
+        axis=1
+    )
 
     X_train, X_test = preprocessing(
-        X_train,X_test
+        X_train,
+        X_test
     )
 
     save_data(
-        X_train,X_test,output_path
+        X_train,
+        X_test,
+        output_path
     )
-    
 
 
+if __name__ == "__main__":
+    main()
