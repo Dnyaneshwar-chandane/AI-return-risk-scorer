@@ -1,11 +1,12 @@
 stages:
-  feature_engg :
-    cmd: python src/features/build_features.py  data/raw/orders.csv
-    deps :
-    - data/raw/orders.csv
-    - src/features/build_features.py
-    outs :
-    - data/processed/data_feature_engg.csv
+
+  feature_engg:
+    cmd: python src/features/build_features.py data/raw/orders.csv
+    deps:
+      - data/raw/orders.csv
+      - src/features/build_features.py
+    outs:
+      - data/processed/data_feature_engg.csv
 
   make_dataset:
     cmd: python src/data/make_dataset.py data/processed/data_feature_engg.csv
@@ -18,6 +19,16 @@ stages:
     outs:
       - data/processed/train.csv
       - data/processed/test.csv
+
+  feature_selection:
+    cmd: python src/features/feature_selection.py data/processed/train.csv data/processed/test.csv
+    deps:
+      - data/processed/train.csv
+      - data/processed/test.csv
+      - src/features/feature_selection.py
+    outs:
+      - data/processed/selected_train.csv
+      - data/processed/selected_test.csv
 
 metrics:
   - dvclive/metrics.json

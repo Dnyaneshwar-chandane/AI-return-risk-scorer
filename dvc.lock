@@ -25,7 +25,7 @@ stages:
       md5: 0d1bae0288f4b504bd8ee0c59f9d31ab
       size: 774009
   feature_engg:
-    cmd: python src/features/build_features.py  data/raw/orders.csv
+    cmd: python src/features/build_features.py data/raw/orders.csv
     deps:
     - path: data/raw/orders.csv
       hash: md5
@@ -40,3 +40,28 @@ stages:
       hash: md5
       md5: cb7f4be6b608770345b9ef9bb9b587d5
       size: 990027
+  feature_selection:
+    cmd: python src/features/feature_selection.py data/processed/train.csv 
+      data/processed/test.csv
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: d14aee83a8355c3736bee22e248b28a6
+      size: 193958
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 0d1bae0288f4b504bd8ee0c59f9d31ab
+      size: 774009
+    - path: src/features/feature_selection.py
+      hash: md5
+      md5: f0c38825df285471725e743eb11ec6c7
+      size: 1437
+    outs:
+    - path: data/processed/selected_test.csv
+      hash: md5
+      md5: ba77ba3b30bc9026560a35238840b54f
+      size: 171143
+    - path: data/processed/selected_train.csv
+      hash: md5
+      md5: 21310902f397341222ecd85ad8bb07c4
+      size: 682785
