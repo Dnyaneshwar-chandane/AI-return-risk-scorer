@@ -1,0 +1,101 @@
+<svg width="820" height="1180" viewBox="0 0 820 1180" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#5a5f6b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <rect width="820" height="1180" fill="#0f1117"/>
+
+  <!-- Title -->
+  <text x="410" y="45" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="600">AI Risk Scorer — Project Architecture</text>
+
+  <!-- Stage boxes -->
+  <!-- 1 Raw Data -->
+  <rect x="260" y="80" width="300" height="56" rx="10" fill="#1c2333" stroke="#3d4a63" stroke-width="1"/>
+  <text x="410" y="103" text-anchor="middle" fill="#e8ecf5" font-size="15" font-weight="600">Raw orders data</text>
+  <text x="410" y="122" text-anchor="middle" fill="#9aa4b8" font-size="12">data/raw/</text>
+
+  <line x1="410" y1="136" x2="410" y2="168" stroke="#5a5f6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 2 Feature Engineering -->
+  <rect x="260" y="170" width="300" height="56" rx="10" fill="#1c2333" stroke="#3d4a63" stroke-width="1"/>
+  <text x="410" y="193" text-anchor="middle" fill="#e8ecf5" font-size="15" font-weight="600">Feature engineering</text>
+  <text x="410" y="212" text-anchor="middle" fill="#9aa4b8" font-size="12">src/features/build_features.py</text>
+
+  <line x1="410" y1="226" x2="410" y2="258" stroke="#5a5f6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 3 Train/Test Split -->
+  <rect x="260" y="260" width="300" height="56" rx="10" fill="#1c2333" stroke="#3d4a63" stroke-width="1"/>
+  <text x="410" y="283" text-anchor="middle" fill="#e8ecf5" font-size="15" font-weight="600">Train / test split</text>
+  <text x="410" y="302" text-anchor="middle" fill="#9aa4b8" font-size="12">src/data/make_dataset.py</text>
+
+  <line x1="410" y1="316" x2="410" y2="348" stroke="#5a5f6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 4 Feature Selection -->
+  <rect x="260" y="350" width="300" height="56" rx="10" fill="#1c2333" stroke="#3d4a63" stroke-width="1"/>
+  <text x="410" y="373" text-anchor="middle" fill="#e8ecf5" font-size="15" font-weight="600">Feature selection</text>
+  <text x="410" y="392" text-anchor="middle" fill="#9aa4b8" font-size="12">src/features/feature_selection.py</text>
+
+  <line x1="410" y1="406" x2="410" y2="438" stroke="#5a5f6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 5 Preprocessing -->
+  <rect x="260" y="440" width="300" height="56" rx="10" fill="#1c2333" stroke="#3d4a63" stroke-width="1"/>
+  <text x="410" y="463" text-anchor="middle" fill="#e8ecf5" font-size="15" font-weight="600">Preprocessing</text>
+  <text x="410" y="482" text-anchor="middle" fill="#9aa4b8" font-size="12">src/preprocessing/preprocessing.py</text>
+
+  <line x1="410" y1="496" x2="410" y2="528" stroke="#5a5f6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 6 Model Comparison / MLflow (highlighted) -->
+  <rect x="220" y="530" width="380" height="70" rx="10" fill="#182c24" stroke="#2f8f6b" stroke-width="1.5"/>
+  <text x="410" y="558" text-anchor="middle" fill="#c9f4e2" font-size="15" font-weight="600">Model comparison — tracked in MLflow</text>
+  <text x="410" y="578" text-anchor="middle" fill="#8fd8bd" font-size="12">LR · RF · XGBoost · LightGBM · Extra Trees · HGB · SVM · KNN</text>
+  <text x="410" y="594" text-anchor="middle" fill="#8fd8bd" font-size="11">experiment: return_risk_model_comparison</text>
+
+  <line x1="410" y1="600" x2="410" y2="632" stroke="#5a5f6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 7 Logistic Regression selected -->
+  <rect x="260" y="634" width="300" height="56" rx="10" fill="#1c2333" stroke="#3d4a63" stroke-width="1"/>
+  <text x="410" y="657" text-anchor="middle" fill="#e8ecf5" font-size="15" font-weight="600">Logistic Regression selected</text>
+  <text x="410" y="676" text-anchor="middle" fill="#9aa4b8" font-size="12">best F1 / recall / PR-AUC</text>
+
+  <line x1="410" y1="690" x2="410" y2="722" stroke="#5a5f6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 8 GridSearchCV -->
+  <rect x="220" y="724" width="380" height="62" rx="10" fill="#182c24" stroke="#2f8f6b" stroke-width="1.5"/>
+  <text x="410" y="750" text-anchor="middle" fill="#c9f4e2" font-size="15" font-weight="600">Hyperparameter tuning — GridSearchCV</text>
+  <text x="410" y="770" text-anchor="middle" fill="#8fd8bd" font-size="12">5-fold CV · optimizing F1 · Best C = 2</text>
+
+  <line x1="410" y1="786" x2="410" y2="818" stroke="#5a5f6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 9 Final Model -->
+  <rect x="240" y="820" width="340" height="66" rx="10" fill="#2a2416" stroke="#c9a13b" stroke-width="1.5"/>
+  <text x="410" y="847" text-anchor="middle" fill="#f5e3ad" font-size="15" font-weight="600">Final Logistic Regression model</text>
+  <text x="410" y="866" text-anchor="middle" fill="#e0c477" font-size="12">C=2 · max_iter=1000 · class_weight=balanced</text>
+  <text x="410" y="882" text-anchor="middle" fill="#e0c477" font-size="11">models/return_risk_model.pkl</text>
+
+  <line x1="410" y1="886" x2="410" y2="918" stroke="#5a5f6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 10 Streamlit App -->
+  <rect x="260" y="920" width="300" height="56" rx="10" fill="#1c2333" stroke="#3d4a63" stroke-width="1"/>
+  <text x="410" y="943" text-anchor="middle" fill="#e8ecf5" font-size="15" font-weight="600">Streamlit application</text>
+  <text x="410" y="962" text-anchor="middle" fill="#9aa4b8" font-size="12">app.py</text>
+
+  <line x1="410" y1="976" x2="410" y2="1008" stroke="#5a5f6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 11 Prediction Output -->
+  <rect x="220" y="1010" width="380" height="60" rx="10" fill="#241826" stroke="#a2418f" stroke-width="1.5"/>
+  <text x="410" y="1036" text-anchor="middle" fill="#f0c9ea" font-size="15" font-weight="600">Return risk prediction</text>
+  <text x="410" y="1056" text-anchor="middle" fill="#d99bcd" font-size="12">probability that an order will be returned</text>
+
+  <!-- Left annotation: DVC pipeline bracket -->
+  <rect x="30" y="70" width="150" height="826" rx="12" fill="none" stroke="#4a5670" stroke-width="1" stroke-dasharray="5,4"/>
+  <text x="105" y="60" text-anchor="middle" fill="#7c8bab" font-size="13" font-weight="600">DVC pipeline</text>
+  <text x="105" y="905" text-anchor="middle" fill="#7c8bab" font-size="11">dvc repro</text>
+
+  <!-- Right annotation: MLflow bracket -->
+  <rect x="640" y="525" width="150" height="270" rx="12" fill="none" stroke="#2f8f6b" stroke-width="1" stroke-dasharray="5,4"/>
+  <text x="715" y="515" text-anchor="middle" fill="#5cb894" font-size="13" font-weight="600">MLflow tracking</text>
+  <text x="715" y="810" text-anchor="middle" fill="#5cb894" font-size="11">mlflow ui</text>
+
+</svg>
