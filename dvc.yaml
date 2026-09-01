@@ -39,6 +39,40 @@ stages:
     outs:
       - data/processed/X_train_trf.csv
       - data/processed/X_test_trf.csv
+      - models/preprocessor.pkl
+
+  train_model:
+    cmd: python src/models/train_model.py data/processed
+    deps:
+      - data/processed/X_train_trf.csv
+      - data/processed/X_test_trf.csv
+      - data/processed/selected_train.csv
+      - data/processed/selected_test.csv
+      - src/models/train_model.py
+    params:
+      - model
+
+  tune_model:
+    cmd: python src/models/tune_model.py data/processed
+    deps:
+      - data/processed/X_train_trf.csv
+      - data/processed/selected_train.csv
+      - src/models/tune_model.py
+    params:
+      - tuning.C
+
+  train_final_model:
+    cmd: python src/models/train_final_model.py data/processed
+    deps:
+      - data/processed/X_train_trf.csv
+      - data/processed/X_test_trf.csv
+      - data/processed/selected_train.csv
+      - data/processed/selected_test.csv
+      - src/models/train_final_model.py
+    params:
+      - final_model
+    outs:
+      - models/return_risk_model.pkl
 
 metrics:
   - dvclive/metrics.json

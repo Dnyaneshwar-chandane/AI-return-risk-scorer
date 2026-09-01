@@ -6,60 +6,105 @@ from sklearn.preprocessing import OneHotEncoder,RobustScaler
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
+import joblib
 
-def preprocessing(X_train,X_test):
+def preprocessing(X_train, X_test):
 
-    numeric_cols=X_train.select_dtypes(include=['int64','float64']).columns.tolist()
-    binary_cols = [col for col in numeric_cols if X_train[col].nunique() == 2]
-    Numeric_cols = [col for col in numeric_cols if col not in binary_cols]
-    categorical_cols=X_train.select_dtypes(include=['object']).columns.tolist()
+    numeric_cols = X_train.select_dtypes(
+        include=['int64', 'float64']
+    ).columns.tolist()
 
-    preprocessing=ColumnTransformer(
+    binary_cols = [
+        col for col in numeric_cols
+        if X_train[col].nunique() == 2
+    ]
+
+    Numeric_cols = [
+        col for col in numeric_cols
+        if col not in binary_cols
+    ]
+
+    categorical_cols = X_train.select_dtypes(
+        include=['object']
+    ).columns.tolist()
+
+    preprocessor = ColumnTransformer(
         [
-            ('categorical',
-              Pipeline(
-                  [
-                      ('impute',SimpleImputer(strategy='most_frequent')),
-                      ('enode',OneHotEncoder(drop='first',handle_unknown='ignore',sparse_output=False))
-                  ]
-              ),
-              categorical_cols
+            (
+                'categorical',
+                Pipeline(
+                    [
+                        (
+                            'impute',
+                            SimpleImputer(
+                                strategy='most_frequent'
+                            )
+                        ),
+                        (
+                            'encode',
+                            OneHotEncoder(
+                                drop='first',
+                                handle_unknown='ignore',
+                                sparse_output=False
+                            )
+                        )
+                    ]
+                ),
+                categorical_cols
+            ),
 
-             ),
+            (
+                'Numerical',
+                Pipeline(
+                    [
+                        (
+                            'impute',
+                            SimpleImputer(
+                                strategy='median'
+                            )
+                        ),
+                        (
+                            'Scaling',
+                            RobustScaler()
+                        )
+                    ]
+                ),
+                Numeric_cols
+            ),
 
-
-
-             ('Numarical',
-              Pipeline(
-                  [
-                      ('impute',SimpleImputer(strategy='median')),
-                      ('Scaling',RobustScaler())
-                  ]
-              ),
-              Numeric_cols
-                 
-             ),
-
-             ('binary',
-              Pipeline(
-                  [
-                      ('impute',SimpleImputer(strategy='most_frequent'))
-                  ]
-              ),
-              binary_cols
-                 
-             )
+            (
+                'binary',
+                Pipeline(
+                    [
+                        (
+                            'impute',
+                            SimpleImputer(
+                                strategy='most_frequent'
+                            )
+                        )
+                    ]
+                ),
+                binary_cols
+            )
         ],
         remainder='passthrough'
-
     )
-    preprocessing.set_output(transform="pandas")
-    X_train=preprocessing.fit_transform(X_train)
-    X_test=preprocessing.transform(X_test)
 
-    return X_train,X_test
+    preprocessor.set_output(
+        transform="pandas"
+    )
 
-def save_data(X_train, X_test, output_path):
+    X_train = preprocessor.fit_transform(
+        X_train
+    )
+
+    X_test = preprocessor.transform(
+        X_test
+    )
+
+    return X_train, X_test, preprocessor
+
+def save_data(X_train, X_test, preprocessor, output_path, home_dir):
 
     output_path = pathlib.Path(output_path)
 
@@ -78,6 +123,17 @@ def save_data(X_train, X_test, output_path):
         index=False
     )
 
+    model_path = home_dir / "models"
+
+    model_path.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    joblib.dump(
+        preprocessor,
+        model_path / "preprocessor.pkl"
+    )
 
 
 def main():
@@ -121,15 +177,16 @@ def main():
         axis=1
     )
 
-    X_train, X_test = preprocessing(
-        X_train,
-        X_test
-    )
+    X_train, X_test, preprocessor = preprocessing(
+        X_train, X_test
+            )
 
     save_data(
         X_train,
         X_test,
-        output_path
+        preprocessor,
+        output_path,
+        home_dir
     )
 
 

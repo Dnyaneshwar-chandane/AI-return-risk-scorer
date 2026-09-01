@@ -78,14 +78,135 @@ stages:
       size: 682785
     - path: src/preprocessing/preprocessing.py
       hash: md5
-      md5: fd0ca9a3ad542fd683b12a4bbcd2491d
-      size: 3020
+      md5: c79c10c6e8c310c4c5f1dc051768e0ed
+      size: 4284
     outs:
     - path: data/processed/X_test_trf.csv
       hash: md5
-      md5: 1c9be4c211379d1c9ea705720cc081a8
+      md5: c6130f76b9ecffc6d7516dd6930ad955
       size: 445445
     - path: data/processed/X_train_trf.csv
       hash: md5
-      md5: 36286231914d198aa7b864ad932ea5c0
+      md5: a050855ebccaf652130dda99811fe3c9
       size: 1780707
+    - path: models/preprocessor.pkl
+      hash: md5
+      md5: 4c9a80388223c5e6a75d63b1ff4401ac
+      size: 7855
+  train_model:
+    cmd: python src/models/train_model.py data/processed
+    deps:
+    - path: data/processed/X_test_trf.csv
+      hash: md5
+      md5: c6130f76b9ecffc6d7516dd6930ad955
+      size: 445445
+    - path: data/processed/X_train_trf.csv
+      hash: md5
+      md5: a050855ebccaf652130dda99811fe3c9
+      size: 1780707
+    - path: data/processed/selected_test.csv
+      hash: md5
+      md5: ba77ba3b30bc9026560a35238840b54f
+      size: 171143
+    - path: data/processed/selected_train.csv
+      hash: md5
+      md5: 21310902f397341222ecd85ad8bb07c4
+      size: 682785
+    - path: src/models/train_model.py
+      hash: md5
+      md5: 17ac5663a376ea8876a4b4d742c235a9
+      size: 4596
+    params:
+      params.yaml:
+        model:
+          logistic_regression:
+            C: 1.0
+            max_iter: 1000
+            class_weight: balanced
+          random_forest:
+            n_estimators: 500
+            max_depth: 10
+            class_weight: balanced
+          xgboost:
+            n_estimators: 1000
+            max_depth: 10
+            learning_rate: 0.1
+          lightgbm:
+            n_estimators: 1000
+            max_depth: 10
+            learning_rate: 0.1
+          extra_trees:
+            n_estimators: 200
+            max_depth:
+            class_weight: balanced
+          hist_gradient_boosting:
+            max_iter: 200
+            learning_rate: 0.1
+            max_leaf_nodes: 31
+          knn:
+            n_neighbors: 5
+            weights: uniform
+            p: 2
+          svm:
+            C: 1.0
+            kernel: rbf
+            class_weight: balanced
+  tune_model:
+    cmd: python src/models/tune_model.py data/processed
+    deps:
+    - path: data/processed/X_train_trf.csv
+      hash: md5
+      md5: a050855ebccaf652130dda99811fe3c9
+      size: 1780707
+    - path: data/processed/selected_train.csv
+      hash: md5
+      md5: 21310902f397341222ecd85ad8bb07c4
+      size: 682785
+    - path: src/models/tune_model.py
+      hash: md5
+      md5: dd3f806d00bcc21990c5c3663da17ddb
+      size: 2539
+    params:
+      params.yaml:
+        tuning.C:
+        - 0.01
+        - 0.1
+        - 0.5
+        - 1
+        - 2
+        - 5
+        - 10
+  train_final_model:
+    cmd: python src/models/train_final_model.py data/processed
+    deps:
+    - path: data/processed/X_test_trf.csv
+      hash: md5
+      md5: c6130f76b9ecffc6d7516dd6930ad955
+      size: 445445
+    - path: data/processed/X_train_trf.csv
+      hash: md5
+      md5: a050855ebccaf652130dda99811fe3c9
+      size: 1780707
+    - path: data/processed/selected_test.csv
+      hash: md5
+      md5: ba77ba3b30bc9026560a35238840b54f
+      size: 171143
+    - path: data/processed/selected_train.csv
+      hash: md5
+      md5: 21310902f397341222ecd85ad8bb07c4
+      size: 682785
+    - path: src/models/train_final_model.py
+      hash: md5
+      md5: bd462db76d7ab85827195da3ffa55b36
+      size: 2583
+    params:
+      params.yaml:
+        final_model:
+          C: 2
+          max_iter: 1000
+          class_weight: balanced
+    outs:
+    - path: models/return_risk_model.pkl
+      hash: md5
+      md5: 755619a9f199b1eed754bb67bc8e196b
+      size: 2479
